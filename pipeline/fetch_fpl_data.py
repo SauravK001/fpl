@@ -12,13 +12,19 @@ Run this file directly to refresh your local data:
 import json
 import os
 from datetime import datetime
+from pathlib import Path
 
 import requests
 
 BOOTSTRAP_URL = "https://fantasy.premierleague.com/api/bootstrap-static/"
 FIXTURES_URL = "https://fantasy.premierleague.com/api/fixtures/"
 
-RAW_DATA_DIR = os.path.join("data", "raw")
+# Resolve paths relative to the PROJECT ROOT (one level up from pipeline/),
+# not the terminal's current working directory. This means the script
+# behaves the same whether you run it from FPL/, from FPL/pipeline/, or
+# via a scheduled task that starts somewhere else entirely.
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+RAW_DATA_DIR = PROJECT_ROOT / "data" / "raw"
 
 
 def ensure_raw_dir_exists():
@@ -84,9 +90,9 @@ def summarize(bootstrap: dict, fixtures: list):
     print(f"Next gameweek:    {next_gw['name'] if next_gw else 'Unknown'}")
 
     if players:
-        sample = players[67]
+        sample = players[0]
         print(f"\nSample player: {sample.get('first_name')} {sample.get('second_name')}")
-        print(f"  now_cost (price):   {sample.get('now_cost')/10}")
+        print(f"  now_cost (price):   {sample.get('now_cost')}")
         print(f"  element_type (pos): {sample.get('element_type')}")
         print(f"  total_points:       {sample.get('total_points')}")
 

@@ -16,10 +16,14 @@ fpl-optimizer/
 │   └── update_all.py               # orchestrates the weekly refresh (calls the above in order)
 │
 ├── prediction/
-│   ├── baseline_model.py           # rolling form + fixture difficulty predictor (Phase 2 step 5)
-│   ├── minutes_model.py            # start probability / rotation risk estimator
-│   ├── points_model.py             # main ML regression/GBM model (Phase 2 step 7)
-│   └── backtest.py                 # runs model on past GWs, measures prediction error
+│   ├── team_strength_model.py      # Dixon-Coles / Bayesian hierarchical Poisson — team attack/defense ratings, per-fixture expected goals │both sides
+│   ├── player_involvement_model.py # goal involvement share per player given team xG (multinomial/Poisson conditioned on team model output)
+│   ├── minutes_model.py            # start probability + expected minutes classifier
+│   ├── clean_sheet_model.py        # derived from team_strength_model's P(opponent scores 0)
+│   ├── bonus_points_model.py       # separate BPS estimator from underlying stats (tackles, key passes, etc.)
+│   ├── points_combiner.py          # combines all of the above through actual FPL scoring rules -> final xPts
+│   ├── ensemble_model.py           # independent LightGBM model on same features, blended with points_combiner output
+│   └── backtest.py                 # walk-forward validation across past GWs, per-component and combined error
 │
 ├── optimizer/
 │   ├── squad_selector.py           # CP-SAT model: pick 15 + XI + captain (Phase 3)
